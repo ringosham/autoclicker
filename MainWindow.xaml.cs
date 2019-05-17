@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 
 namespace Autoclicker
 {
@@ -21,6 +23,8 @@ namespace Autoclicker
     /// </summary>
     public partial class MainWindow : Window
     {
+        private static readonly Regex floatRegex = new Regex(@"\d*\.\d+|\d+|\d*\.");
+
         public string GetCharFromKey(Key key)
         {
             char ch = ' ';
@@ -98,6 +102,10 @@ namespace Autoclicker
         public MainWindow()
         {
             InitializeComponent();
+            //TODO Read config file.
+            //TODO Set up new thread for reading global key strokes
+            //TODO Normal distribution
+            //TODO Auto click
         }
 
         private void OnNewKeybind(object sender, KeyEventArgs e)
@@ -113,6 +121,72 @@ namespace Autoclicker
             else
                 ((TextBox)sender).Text = GetCharFromKey(e.Key);
             e.Handled = true;
+        }
+
+        private void OnSetKey(object sender, RoutedEventArgs e)
+        {
+            string KeyBindText = ((TextBox) this.FindName("Keybind")).Text;
+            string LowerBoundText = ((TextBox) this.FindName("LowerBoundSecond")).Text;
+            string UpperBoundText = ((TextBox) this.FindName("UpperBoundSecond")).Text;
+            if (KeyBindText.Trim().Length == 0)
+            {
+                MessageBox.Show("Please set your key bind first", "No key bind detected", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                return;
+            }
+
+            if (LowerBoundText.EndsWith(".") || UpperBoundText.EndsWith("."))
+            {
+                MessageBox.Show("Please type in the seconds between each click", "Invalid number format", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            float LowerBoundSecond = float.Parse(LowerBoundText);
+            float UpperBoundSecond = float.Parse(UpperBoundText);
+            if (LowerBoundSecond == 0 || UpperBoundSecond == 0)
+            {
+                MessageBox.Show("The time between clicks cannot be 0", "Invalid number format", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            Configuration manager = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            KeyValueConfigurationCollection collection = manager.AppSettings.Settings;
+            collection["key"].Value = CharToKey(KeyBindText).ToString();
+            manager.Save(ConfigurationSaveMode.Modified);
+            ConfigurationManager.RefreshSection(manager.AppSettings.SectionInformation.Name);
+
+        }
+
+        [DllImport("user32.dll")]
+        private static extern short VkKeyScan(char ch);
+
+        private short CharToKey(string charTyped)
+        {
+            switch (charTyped)
+            {
+                case "[Tab]":
+                    return 0x0f;
+                case "[Caps lock]":
+                    return 0x3a;
+                case "[Enter]":
+                    return 0x1c;
+                case "[Backspace]":
+                    return 0x0e;
+                case "[Left shift]":
+                    return 0x2a;
+                case "[Right shift]":
+                    return 0x36;
+                case "[Space]":
+                    return 0x39;
+                default:
+                    char ch = charTyped.ToCharArray()[0];
+                    short vkey = VkKeyScan(ch);
+                    return vkey;
+            }
+        }
+
+        private void OnSecondKeyDown(object sender, TextCompositionEventArgs e)
+        {
+            if (!floatRegex.IsMatch(e.Text))
+                e.Handled = true;
         }
     }
 }
