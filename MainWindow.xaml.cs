@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Configuration;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,7 +25,75 @@ namespace Autoclicker
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static readonly Regex floatRegex = new Regex(@"\d*\.\d+|\d+|\d*\.");
+        private static readonly Regex FloatRegex = new Regex(@"\d*\.\d+|\d+|\d*\.");
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        public static extern int ToUnicode(
+            uint virtualKeyCode,
+            uint scanCode,
+            byte[] keyboardState,
+            StringBuilder receivingBuffer,
+            int bufferSize,
+            uint flags
+        );
+
+        [DllImport("user32.dll")]
+        public static extern bool GetKeyboardState(byte[] lpKeyState);
+
+        [DllImport("user32.dll")]
+        public static extern uint MapVirtualKey(uint uCode, MapType uMapType);
+
+        [DllImport("user32.dll")]
+        private static extern short VkKeyScan(char ch);
+
+        public enum MapType : uint
+        {
+            MAPVK_VK_TO_VSC = 0x0,
+            MAPVK_VSC_TO_VK = 0x1,
+            MAPVK_VK_TO_CHAR = 0x2,
+            MAPVK_VSC_TO_VK_EX = 0x3,
+        }
+
+        public MainWindow()
+        {
+            InitializeComponent();
+            InitConfig(false);
+            ReadConfig();
+            //TODO Set up new thread for reading global key strokes
+            //TODO Normal distribution
+            //TODO Auto click
+        }
+
+        private void ReadConfig()
+        {
+            try
+            {
+                Configuration manager = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                Config config = manager.GetSection("Autoclicker") as Config;
+                ((TextBox) this.FindName("Keybind")).Text = GetCharFromKey((Key) config.Key);
+                ((TextBox) this.FindName("LowerBoundSecond")).Text = 
+                    config.LowerSecond.ToString(CultureInfo.InvariantCulture);
+                ((TextBox) this.FindName("UpperBoundSecond")).Text =
+                    config.UpperSecond.ToString(CultureInfo.InvariantCulture);
+                ((ComboBox) this.FindName("ClickOption")).SelectedIndex = config.LeftClick ? 0 : 1;
+            }
+            catch (ConfigurationErrorsException e)
+            {
+                InitConfig(true);
+            }
+        }
+
+        private void InitConfig(bool reset)
+        {
+            Configuration manager = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            if (manager.Sections["Autoclicker"] == null || reset)
+            {
+                if (reset)
+                    manager.Sections.Remove("Autoclicker");
+                manager.Sections.Add("Autoclicker", new Config());
+            }
+            manager.Save(ConfigurationSaveMode.Full);
+        }
 
         public string GetCharFromKey(Key key)
         {
@@ -75,39 +145,6 @@ namespace Autoclicker
             return ch.ToString();
         }
 
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        public static extern int ToUnicode(
-            uint virtualKeyCode,
-            uint scanCode,
-            byte[] keyboardState,
-            StringBuilder receivingBuffer,
-            int bufferSize,
-            uint flags
-        );
-
-        [DllImport("user32.dll")]
-        public static extern bool GetKeyboardState(byte[] lpKeyState);
-
-        [DllImport("user32.dll")]
-        public static extern uint MapVirtualKey(uint uCode, MapType uMapType);
-
-        public enum MapType : uint
-        {
-            MAPVK_VK_TO_VSC = 0x0,
-            MAPVK_VSC_TO_VK = 0x1,
-            MAPVK_VK_TO_CHAR = 0x2,
-            MAPVK_VSC_TO_VK_EX = 0x3,
-        }
-
-        public MainWindow()
-        {
-            InitializeComponent();
-            //TODO Read config file.
-            //TODO Set up new thread for reading global key strokes
-            //TODO Normal distribution
-            //TODO Auto click
-        }
-
         private void OnNewKeybind(object sender, KeyEventArgs e)
         {
             if (Keyboard.IsKeyDown(Key.LeftAlt))
@@ -150,13 +187,12 @@ namespace Autoclicker
             Configuration manager = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             KeyValueConfigurationCollection collection = manager.AppSettings.Settings;
             collection["key"].Value = CharToKey(KeyBindText).ToString();
+            collection["clickOption"].Value = ((ComboBoxItem) ((ComboBox) this.FindName("ClickOption")).SelectedItem).ContentStringFormat.Equals("Left click").ToString();
+
             manager.Save(ConfigurationSaveMode.Modified);
             ConfigurationManager.RefreshSection(manager.AppSettings.SectionInformation.Name);
 
         }
-
-        [DllImport("user32.dll")]
-        private static extern short VkKeyScan(char ch);
 
         private short CharToKey(string charTyped)
         {
@@ -185,7 +221,7 @@ namespace Autoclicker
 
         private void OnSecondKeyDown(object sender, TextCompositionEventArgs e)
         {
-            if (!floatRegex.IsMatch(e.Text))
+            if (!FloatRegex.IsMatch(e.Text))
                 e.Handled = true;
         }
     }
