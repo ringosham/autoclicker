@@ -1,36 +1,29 @@
 ﻿using System.Configuration;
+using System.Windows.Input;
 
 namespace Autoclicker {
-    public sealed class Config : ConfigurationSection {
+    public sealed class Config {
 
-        [ConfigurationProperty("key",
-            DefaultValue = 192,
-            IsRequired = true)]
-        public int Key {
+        private Config() { }
+
+        public static Config Instance = new Config();
+
+        public Key Key {
             get;
             set;
         }
 
-        [ConfigurationProperty("leftClick",
-            DefaultValue = true,
-            IsRequired = true)]
         public bool LeftClick {
             get;
             set;
         }
 
-        [ConfigurationProperty("lowerSecond",
-            DefaultValue = 0.2d,
-            IsRequired = true)]
-        public double LowerSecond {
+        public double Mean {
             get;
             set;
         }
 
-        [ConfigurationProperty("upperSecond",
-            DefaultValue = 0.3d,
-            IsRequired = true)]
-        public double UpperSecond {
+        public double Sigma {
             get;
             set;
         }

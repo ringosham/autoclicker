@@ -1,4 +1,6 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
+using System.Data;
 using System.Globalization;
 using System.Text;
 using System.Windows;
@@ -17,7 +19,6 @@ namespace Autoclicker {
 
         public MainWindow() {
             InitializeComponent();
-            InitConfig(false);
             ReadConfig();
             ClickThread clickThread = new ClickThread();
             Thread thread = new Thread(clickThread.Run);
@@ -27,28 +28,39 @@ namespace Autoclicker {
         private void ReadConfig() {
             try {
                 Configuration manager = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-                Config config = manager.GetSection("Autoclicker") as Config;
-                ((TextBox)this.FindName("Keybind")).Text = KeyUtil.ConvertKeyToString((Key)config.Key);
-                ((TextBox)this.FindName("LowerBoundSecond")).Text =
-                    config.LowerSecond.ToString(CultureInfo.InvariantCulture);
-                ((TextBox)this.FindName("UpperBoundSecond")).Text =
-                    config.UpperSecond.ToString(CultureInfo.InvariantCulture);
-                ((ComboBox)this.FindName("ClickOption")).SelectedIndex = config.LeftClick ? 0 : 1;
+                KeyValueConfigurationCollection appSetting = manager.AppSettings.Settings;
+                if (appSetting["keybind"] == null || appSetting["mean"] == null || appSetting["sigma"] == null || appSetting["clickOption"] == null)
+                    InitConfig();
+                Config.Instance.Key = (Key)int.Parse(appSetting["keybind"].Value);
+                Config.Instance.Mean = double.Parse(appSetting["mean"].Value);
+                Config.Instance.Sigma = double.Parse(appSetting["sigma"].Value);
+                if (!appSetting["clickOption"].Value.Equals("left") && !appSetting["clickOption"].Value.Equals("right"))
+                    throw new InvalidConstraintException("Invalid config value in clickOption");
+                Config.Instance.LeftClick = appSetting["clickOption"].Value.Equals("left");
+
+                ((TextBox)this.FindName("Keybind")).Text = KeyUtil.ConvertKeyToString(Config.Instance.Key);
+                ((TextBox)this.FindName("MeanTextBox")).Text =
+                    Config.Instance.Mean.ToString(CultureInfo.InvariantCulture);
+                ((TextBox)this.FindName("SigmaTextBox")).Text =
+                    Config.Instance.Sigma.ToString(CultureInfo.InvariantCulture);
+                ((ComboBox)this.FindName("ClickOption")).SelectedIndex = Config.Instance.LeftClick ? 0 : 1;
 
             }
-            catch (ConfigurationErrorsException) {
-                InitConfig(true);
+            catch (Exception) {
+                InitConfig();
             }
         }
 
-        private void InitConfig(bool reset) {
+        private void InitConfig() {
             Configuration manager = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            if (manager.Sections["Autoclicker"] == null || reset) {
-                if (reset)
-                    manager.Sections.Remove("Autoclicker");
-                manager.Sections.Add("Autoclicker", new Config());
-            }
+            KeyValueConfigurationCollection configCollection = manager.AppSettings.Settings;
+            configCollection.Clear();
+            configCollection.Add("keybind", "146");
+            configCollection.Add("mean", "0.2");
+            configCollection.Add("sigma", "0.01");
+            configCollection.Add("clickOption", "left");
             manager.Save(ConfigurationSaveMode.Full);
+            ReadConfig();
         }
 
         private void OnNewKeybind(object sender, KeyEventArgs e) {
@@ -58,39 +70,57 @@ namespace Autoclicker {
 
         private void OnSetKey(object sender, RoutedEventArgs e) {
             string KeyBindText = ((TextBox)this.FindName("Keybind")).Text;
-            string LowerBoundText = ((TextBox)this.FindName("LowerBoundSecond")).Text;
-            string UpperBoundText = ((TextBox)this.FindName("UpperBoundSecond")).Text;
-            if (KeyBindText.Trim().Length == 0) {
+            string MeanText = ((TextBox)this.FindName("MeanTextBox")).Text;
+            string SigmaText = ((TextBox)this.FindName("SigmaTextBox")).Text;
+            if (KeyBindText.Trim().Length == 0 || KeyBindText.Equals("None")) {
                 MessageBox.Show("Please set your key bind first", "No key bind detected", MessageBoxButton.OK,
                     MessageBoxImage.Error);
                 return;
             }
 
-            if (LowerBoundText.EndsWith(".") || UpperBoundText.EndsWith(".")) {
+            if (MeanText.EndsWith(".") || SigmaText.EndsWith(".")) {
                 MessageBox.Show("Please type in the seconds between each click", "Invalid number format", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            double LowerBoundSecond = double.Parse(LowerBoundText);
-            double UpperBoundSecond = double.Parse(UpperBoundText);
-            if (LowerBoundSecond.Equals(0f) || UpperBoundSecond.Equals(0f)) {
+            double Mean = double.Parse(MeanText);
+            double Sigma = double.Parse(SigmaText);
+            if (Mean.Equals(0f)) {
                 MessageBox.Show("The time between clicks cannot be 0", "Invalid number format", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+            bool leftClick = ((ComboBox)this.FindName("ClickOption")).SelectedIndex == 0;
             Key newKeyBind = KeyUtil.ConvertStringToKey(KeyBindText);
+            Config.Instance.Key = newKeyBind;
+            Config.Instance.Mean = Mean;
+            Config.Instance.Sigma = Sigma;
+            Config.Instance.LeftClick = leftClick;
             Configuration manager = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            //TODO Fix saving config
-            /*manager.Sections. = new Config();
-            collection["key"].Value = CharToKey(KeyBindText).ToString();
-            collection["clickOption"].Value = ((ComboBoxItem) ((ComboBox) this.FindName("ClickOption")).SelectedItem).ContentStringFormat.Equals("Left click").ToString();*/
-
-            manager.Save(ConfigurationSaveMode.Modified);
+            KeyValueConfigurationCollection appSetting = manager.AppSettings.Settings;
+            appSetting["keybind"].Value = ((int)Config.Instance.Key).ToString();
+            appSetting["lowerBoundSecond"].Value = Config.Instance.Mean.ToString(CultureInfo.InvariantCulture);
+            appSetting["upperBoundSecond"].Value = Config.Instance.Sigma.ToString(CultureInfo.InvariantCulture);
+            appSetting["clickOption"].Value = Config.Instance.LeftClick ? "left" : "right";
+            manager.Save(ConfigurationSaveMode.Full);
             ConfigurationManager.RefreshSection(manager.AppSettings.SectionInformation.Name);
-
+            MessageBox.Show("Settings applied", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void OnSecondKeyDown(object sender, TextCompositionEventArgs e) {
             if (!FloatRegex.IsMatch(e.Text))
                 e.Handled = true;
+        }
+
+        private void OnHelp(object sender, RoutedEventArgs e) {
+            StringBuilder builder = new StringBuilder();
+            builder.Append("Standard deviation works like this:\n");
+            builder.Append("The standard deviation is often dubbed as the sigma\n");
+            builder.Append("\n");
+            builder.Append("68% of the generated numbers is within mean ± sigma\n");
+            builder.Append("95% of the generated numbers is within mean ± 2 * sigma\n");
+            builder.Append("99.7% of the generated numbers is within mean ± 3 * sigma\n\n");
+            builder.Append("If sigma is set to 0, you will be clicking at a constant rate\n");
+            builder.Append("Tip: Set the standard deviation to a small number (>0.03) to prevent clicking too fast");
+            MessageBox.Show(builder.ToString(), "Help", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

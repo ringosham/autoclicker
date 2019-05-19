@@ -4,19 +4,21 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Autoclicker by Ringosham" Height="184.5" Width="348.5">
+        Title="Autoclicker by Ringosham" Height="210.5" Width="348.5">
     <Grid>
         <TextBox HorizontalAlignment="Left" Height="24" Margin="28,31,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="226" Name="Keybind" PreviewKeyDown="OnNewKeybind"/>
-        <TextBox HorizontalAlignment="Left" Height="26" Margin="88,67,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="85" Name="LowerBoundSecond" PreviewTextInput="OnSecondKeyDown"/>
-        <TextBox HorizontalAlignment="Left" Height="26" Margin="213,67,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="99" Name="UpperBoundSecond" PreviewTextInput="OnSecondKeyDown"/>
-        <Label Content="and" HorizontalAlignment="Left" Margin="178,67,0,0" VerticalAlignment="Top"/>
-        <Label Content="Between" HorizontalAlignment="Left" Margin="28,67,0,0" VerticalAlignment="Top"/>
-        <Label Content="Auto" HorizontalAlignment="Left" Margin="93,103,0,0" VerticalAlignment="Top"/>
-        <ComboBox HorizontalAlignment="Left" Margin="134,103,0,0" VerticalAlignment="Top" Width="120" Height="26" Name="ClickOption">
+        <TextBox HorizontalAlignment="Left" Height="26" Margin="102,67,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="152" Name="MeanTextBox" PreviewTextInput="OnSecondKeyDown"/>
+        <TextBox HorizontalAlignment="Left" Height="26" Margin="195,102,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="99" Name="SigmaTextBox" PreviewTextInput="OnSecondKeyDown"/>
+        <Label Content="Standard deviation (sigma): " HorizontalAlignment="Left" Margin="28,102,0,0" VerticalAlignment="Top"/>
+        <Label Content="At mean of" HorizontalAlignment="Left" Margin="28,67,0,0" VerticalAlignment="Top"/>
+        <Label Content="Auto" HorizontalAlignment="Left" Margin="88,133,0,0" VerticalAlignment="Top"/>
+        <ComboBox HorizontalAlignment="Left" Margin="134,133,0,0" VerticalAlignment="Top" Width="120" Height="26" Name="ClickOption">
             <ComboBoxItem>Left click</ComboBoxItem>
             <ComboBoxItem>Right click</ComboBoxItem>
         </ComboBox>
         <Label Content="Current hotkey" HorizontalAlignment="Left" Margin="28,0,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.456,-0.141"/>
         <Button Content="Set" HorizontalAlignment="Left" Margin="259,31,0,0" VerticalAlignment="Top" Width="53" Height="24" Click="OnSetKey"/>
+        <Label Content="seconds" HorizontalAlignment="Left" Margin="259,67,0,0" VerticalAlignment="Top"/>
+        <Button Content="?" HorizontalAlignment="Left" Margin="304,145,0,0" VerticalAlignment="Top" Width="24" Height="24" Click="OnHelp"/>
     </Grid>
 </Window>
