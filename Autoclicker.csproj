@@ -71,6 +71,7 @@
     </Compile>
     <Compile Include="ClickThread.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="KeyboardHook.cs" />
     <Compile Include="KeyUtil.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

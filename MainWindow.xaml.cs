@@ -15,14 +15,31 @@ namespace Autoclicker {
     /// </summary>
     public partial class MainWindow : Window {
         private static readonly Regex FloatRegex = new Regex(@"\d*\.\d+|\d+|\d*\.");
+        private static KeyboardHook hook = new KeyboardHook();
+        private static Thread clickThread;
 
         public MainWindow() {
             InitializeComponent();
             ReadConfig();
-            /*ClickThread clickThread = new ClickThread();
-            Thread thread = new Thread(clickThread.Run);
-            thread.Start();*/
+            hook.OnKeyPressed += onGlobalKeyPress;
+            hook.OnKeyUnpressed += onGlobalKeyUnpress;
+            hook.HookKeyboard();
         }
+
+        public void onGlobalKeyPress(object sender, int e) {
+            Key key = KeyInterop.KeyFromVirtualKey(e);
+            if (key.Equals(Config.Instance.Key)) {
+                if (clickThread == null || !clickThread.IsAlive) {
+                    ClickThread click = new ClickThread(Config.Instance.Mean, Config.Instance.Sigma, Config.Instance.LeftClick);
+                    clickThread = new Thread(click.Run);
+                    clickThread.Start();
+                    return;
+                }
+                clickThread.Abort();
+            }
+        }
+
+        public void onGlobalKeyUnpress(object sender, int e) { }
 
         private void ReadConfig() {
             try {
