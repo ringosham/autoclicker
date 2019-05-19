@@ -6,7 +6,6 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 
@@ -20,9 +19,9 @@ namespace Autoclicker {
         public MainWindow() {
             InitializeComponent();
             ReadConfig();
-            ClickThread clickThread = new ClickThread();
+            /*ClickThread clickThread = new ClickThread();
             Thread thread = new Thread(clickThread.Run);
-            thread.Start();
+            thread.Start();*/
         }
 
         private void ReadConfig() {
@@ -112,7 +111,7 @@ namespace Autoclicker {
 
         private void OnHelp(object sender, RoutedEventArgs e) {
             StringBuilder builder = new StringBuilder();
-            builder.Append("Standard deviation works like this:\n");
+            builder.Append("Gaussian distribution works like this:\n");
             builder.Append("The standard deviation is often dubbed as the sigma\n");
             builder.Append("\n");
             builder.Append("68% of the generated numbers is within mean ± sigma\n");
