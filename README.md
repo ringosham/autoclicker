@@ -2,23 +2,14 @@
 
 A (low level?) autoclicker that uses normal distribution to click. Configurable hotkeys, left/right click and timing.
 
-Only takes the following as hotkeys.
-* Alphabets and number keys
-* Punctuation keys
-* Enter
-* Num pad
-* Ctrl, Alt, Shift, Tab, Caps lock (Both left right)
-
 Does not support the following
+* Non-US keyboard layouts
 * Key with modifiers (No Ctrl/Shift/Alt + [Key])
-* Macro keys / Game mouse buttons
-* F1-F12+
-* Insert, Home, Page up/down, Delete, End
-* Pause, Scroll lock, Print screen, Num Lock
-* Arrow keys
-* Escape button
+* Print screen key (Why would you want to use this anyway)
+* Game mouse buttons
+* Macro keys might be supported, but untested.
 
-Written for for some C# practise.
+Written for for some C# practise and peronsal use.
 
 ## License
 

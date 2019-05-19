@@ -1,20 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Configuration;
 
-namespace Autoclicker
-{
-    public sealed class Config : ConfigurationSection
-    {
+namespace Autoclicker {
+    public sealed class Config : ConfigurationSection {
 
         [ConfigurationProperty("key",
             DefaultValue = 192,
             IsRequired = true)]
-        public int Key
-        {
+        public int Key {
             get;
             set;
         }
@@ -22,26 +14,23 @@ namespace Autoclicker
         [ConfigurationProperty("leftClick",
             DefaultValue = true,
             IsRequired = true)]
-        public bool LeftClick
-        {
+        public bool LeftClick {
             get;
             set;
         }
 
         [ConfigurationProperty("lowerSecond",
-            DefaultValue = 0.2,
+            DefaultValue = 0.2d,
             IsRequired = true)]
-        public float LowerSecond
-        {
+        public double LowerSecond {
             get;
             set;
         }
 
         [ConfigurationProperty("upperSecond",
-            DefaultValue = 0.3,
+            DefaultValue = 0.3d,
             IsRequired = true)]
-        public float UpperSecond
-        {
+        public double UpperSecond {
             get;
             set;
         }
