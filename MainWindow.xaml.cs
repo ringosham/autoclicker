@@ -56,7 +56,7 @@ namespace Autoclicker {
             KeyValueConfigurationCollection configCollection = manager.AppSettings.Settings;
             configCollection.Clear();
             configCollection.Add("keybind", "146");
-            configCollection.Add("mean", "0.2");
+            configCollection.Add("mean", "0.25");
             configCollection.Add("sigma", "0.01");
             configCollection.Add("clickOption", "left");
             manager.Save(ConfigurationSaveMode.Full);
