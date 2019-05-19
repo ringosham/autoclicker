@@ -1,5 +1,4 @@
-﻿using System.Configuration;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
 namespace Autoclicker {
     public sealed class Config {
