@@ -96,8 +96,8 @@ namespace Autoclicker {
             Configuration manager = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             KeyValueConfigurationCollection appSetting = manager.AppSettings.Settings;
             appSetting["keybind"].Value = ((int)Config.Instance.Key).ToString();
-            appSetting["lowerBoundSecond"].Value = Config.Instance.Mean.ToString(CultureInfo.InvariantCulture);
-            appSetting["upperBoundSecond"].Value = Config.Instance.Sigma.ToString(CultureInfo.InvariantCulture);
+            appSetting["mean"].Value = Config.Instance.Mean.ToString(CultureInfo.InvariantCulture);
+            appSetting["sigma"].Value = Config.Instance.Sigma.ToString(CultureInfo.InvariantCulture);
             appSetting["clickOption"].Value = Config.Instance.LeftClick ? "left" : "right";
             manager.Save(ConfigurationSaveMode.Full);
             ConfigurationManager.RefreshSection(manager.AppSettings.SectionInformation.Name);
