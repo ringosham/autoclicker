@@ -46,12 +46,12 @@ namespace Autoclicker {
         public void Run() {
             Normal normal = new Normal(Mean, Sigma);
             while (true) {
-                Thread.Sleep((int) (normal.Sample() * 1000));
                 Point currentPos = getMousePosition();
                 if (IsLeftClick)
                     mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, (uint) currentPos.X, (uint) currentPos.Y, 0, 0);
                 else
                     mouse_event(MOUSEEVENTF_RIGHTDOWN | MOUSEEVENTF_RIGHTUP, (uint) currentPos.X, (uint) currentPos.Y, 0, 0);
+                Thread.Sleep((int)(normal.Sample() * 1000));
             }
         }
     }
