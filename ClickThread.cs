@@ -51,7 +51,11 @@ namespace Autoclicker {
                     mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, (uint) currentPos.X, (uint) currentPos.Y, 0, 0);
                 else
                     mouse_event(MOUSEEVENTF_RIGHTDOWN | MOUSEEVENTF_RIGHTUP, (uint) currentPos.X, (uint) currentPos.Y, 0, 0);
-                Thread.Sleep((int)(normal.Sample() * 1000));
+                //Don't care about data loss. It's only 1ms difference
+                int sample = (int) normal.Sample() * 1000;
+                if (sample <= 0)
+                    sample = 1;
+                Thread.Sleep(sample);
             }
         }
     }
