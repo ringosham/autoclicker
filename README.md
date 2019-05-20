@@ -12,6 +12,10 @@ Does not support the following
 
 Written for for some C# practise and peronsal use.
 
+## Downloads
+
+Go to the [release](https://github.com/ringosham/autoclicker/releases) tab
+
 ## License
 
 ```
