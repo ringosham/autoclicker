@@ -29,7 +29,7 @@ namespace Autoclicker {
         }
 
         private void OnClosing(object sender, CancelEventArgs e) {
-            clickThread.Abort();
+            clickThread?.Abort();
             hook.UnHookKeyboard();
         }
 
