@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Configuration;
 using System.Data;
 using System.Globalization;
@@ -24,6 +25,12 @@ namespace Autoclicker {
             hook.OnKeyPressed += onGlobalKeyPress;
             hook.OnKeyUnpressed += onGlobalKeyUnpress;
             hook.HookKeyboard();
+            Closing += OnClosing;
+        }
+
+        private void OnClosing(object sender, CancelEventArgs e) {
+            clickThread.Abort();
+            hook.UnHookKeyboard();
         }
 
         public void onGlobalKeyPress(object sender, int e) {
