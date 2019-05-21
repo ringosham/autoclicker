@@ -1,6 +1,6 @@
 # Autoclicker
 
-A (low level?) autoclicker that uses normal distribution to click. Configurable hotkeys, left/right click and timing.
+A (low level?) autoclicker that uses [normal distribution](https://www.mathsisfun.com/data/standard-normal-distribution.html) to click. Configurable hotkeys, left/right click and timing.
 
 Does not support the following
 * Non-US keyboard layouts

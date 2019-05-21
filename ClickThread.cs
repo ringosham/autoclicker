@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using MathNet.Numerics.Distributions;
@@ -45,6 +46,7 @@ namespace Autoclicker {
 
         public void Run() {
             Normal normal = new Normal(Mean, Sigma);
+            normal.RandomSource = new Random();
             while (true) {
                 Point currentPos = getMousePosition();
                 if (IsLeftClick)
@@ -52,7 +54,7 @@ namespace Autoclicker {
                 else
                     mouse_event(MOUSEEVENTF_RIGHTDOWN | MOUSEEVENTF_RIGHTUP, (uint) currentPos.X, (uint) currentPos.Y, 0, 0);
                 //Don't care about data loss. It's only 1ms difference
-                int sample = (int) normal.Sample() * 1000;
+                int sample = (int) (normal.Sample() * 1000);
                 if (sample <= 0)
                     sample = 1;
                 Thread.Sleep(sample);

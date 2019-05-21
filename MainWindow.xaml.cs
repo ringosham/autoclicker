@@ -134,8 +134,9 @@ namespace Autoclicker {
             builder.Append("68% of the generated numbers is within mean ± sigma\n");
             builder.Append("95% of the generated numbers is within mean ± 2 * sigma\n");
             builder.Append("99.7% of the generated numbers is within mean ± 3 * sigma\n\n");
-            builder.Append("This means the timing of your clicks range from (mean - 3 * sigma) to (mean + 3 * sigma)\n");
+            builder.Append("This means the timing of your clicks range around (mean ± 3 * sigma)\n\n");
             builder.Append("If sigma is set to 0, you will be clicking at a constant rate\n");
+            builder.Append("In short, the sigma controls the variance in timing.\n");
             builder.Append("Tip: Set the standard deviation to a small number (>0.03) to prevent clicking too fast");
             MessageBox.Show(builder.ToString(), "Help", MessageBoxButton.OK, MessageBoxImage.Information);
         }
