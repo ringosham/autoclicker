@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Data;
@@ -9,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Text.RegularExpressions;
 using System.Threading;
+using MathNet.Numerics.Distributions;
 
 namespace Autoclicker {
     /// <summary>
@@ -26,6 +28,7 @@ namespace Autoclicker {
             hook.OnKeyUnpressed += onGlobalKeyUnpress;
             hook.HookKeyboard();
             Closing += OnClosing;
+            RefreshEstimate();
         }
 
         private void OnClosing(object sender, CancelEventArgs e) {
@@ -126,6 +129,24 @@ namespace Autoclicker {
             manager.Save(ConfigurationSaveMode.Full);
             ConfigurationManager.RefreshSection(manager.AppSettings.SectionInformation.Name);
             MessageBox.Show("Settings applied", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            RefreshEstimate();
+        }
+
+        private void RefreshEstimate() {
+            double clickPerSecond = Estimate(Config.Instance.Mean, Config.Instance.Sigma);
+            ((Label)this.FindName("ClickEstimation")).Content = clickPerSecond;
+        }
+
+        private double Estimate(double mean, double sigma) {
+            Normal normal = new Normal(mean, sigma);
+            normal.RandomSource = new Random();
+            double clicks = 0;
+            double totalTime = 0;
+            while (totalTime < 1) {
+                totalTime += normal.Sample();
+                clicks++;
+            }
+            return clicks;
         }
 
         private void OnSecondKeyDown(object sender, TextCompositionEventArgs e) {

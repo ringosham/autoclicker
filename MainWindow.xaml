@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Autoclicker by Ringosham" Height="210.5" Width="348.5">
+        Title="Autoclicker by Ringosham" Height="228.5" Width="348.5">
     <Grid>
         <TextBox HorizontalAlignment="Left" Height="24" Margin="28,31,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="226" Name="Keybind" PreviewKeyDown="OnNewKeybind"/>
         <TextBox HorizontalAlignment="Left" Height="26" Margin="102,67,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="152" Name="MeanTextBox" PreviewTextInput="OnSecondKeyDown"/>
@@ -19,6 +19,8 @@
         <Label Content="Current hotkey" HorizontalAlignment="Left" Margin="28,0,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.456,-0.141"/>
         <Button Content="Set" HorizontalAlignment="Left" Margin="259,31,0,0" VerticalAlignment="Top" Width="53" Height="24" Click="OnSetKey"/>
         <Label Content="seconds" HorizontalAlignment="Left" Margin="259,67,0,0" VerticalAlignment="Top"/>
-        <Button Content="?" HorizontalAlignment="Left" Margin="304,145,0,0" VerticalAlignment="Top" Width="24" Height="24" Click="OnHelp"/>
+        <Button Content="?" HorizontalAlignment="Left" Margin="306,163,0,0" VerticalAlignment="Top" Width="24" Height="24" Click="OnHelp"/>
+        <Label Content="Estimated average clicks per second: " HorizontalAlignment="Left" Margin="37,164,0,0" VerticalAlignment="Top"/>
+        <Label Content="0" HorizontalAlignment="Left" Margin="248,164,0,0" VerticalAlignment="Top" Name="ClickEstimation" RenderTransformOrigin="1.396,0.577"/>
     </Grid>
 </Window>
